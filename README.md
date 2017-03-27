@@ -5,8 +5,8 @@ A Webhook-featured workflow automation framework.
 Create a workflow for employees to apply for expenditure.
 ```js
 var flow = new Flow();
-flow.setup('/expenditure')
-    .if(data => { return isLevelOneEmployee(data.from) })
+flow.setup('/expenditure-application-workflow')
+    .if(data => { return isLevelOneEmployee(data.fromEmail) })
       .trigger('level-2@samples.com', 'ask-approval.html')
     .if(data => { return data.from === 'level-2@samples.com' })
       .trigger('level-3@samples.com', 'ask-approval.html')
