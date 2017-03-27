@@ -11,7 +11,6 @@ flow.setup('/expenditure-application-workflow')
     .if(data => { return data.from === 'director@samples.com' })
       .trigger(data.applicant, 'got-approval.html')
       .trigger('secretary@samples.com', 'got-approval.html')
-      .end()
     .if(data => { return true })
-      .trigger(team.findManager(data.from).email, 'ask-approval.html')
+      .trigger(team.findManager(data.from).email, 'ask-approval.html');
 ```
