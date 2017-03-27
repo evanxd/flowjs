@@ -6,13 +6,10 @@ Create a workflow for employees to apply for expenditure.
 ```js
 var flow = new Flow();
 flow.setup('/expenditure-application-workflow')
-    .if(data => { return isLevelOneEmployee(data.fromEmail) })
-      .trigger('level-2@samples.com', 'ask-approval.html')
-    .if(data => { return data.from === 'level-2@samples.com' })
-      .trigger('level-3@samples.com', 'ask-approval.html')
-    .if(data => { return data.from === 'level-3@samples.com' })
-      .trigger('level-4@samples.com', 'ask-approval.html')
-    .if(data => { return data.from === 'level-4@samples.com' })
+    .if(data => { return data.from === 'director@samples.com' })
       .trigger(data.applicant, 'got-approval.html')
-      .trigger('secretary@samples.com', 'got-approval.html');
+      .trigger('secretary@samples.com', 'got-approval.html')
+      .end()
+    .if(data => { return true })
+      .trigger(flow.getManager(data.from).email, 'ask-approval.html')
 ```
