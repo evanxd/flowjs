@@ -35,6 +35,8 @@ Flow.prototype = {
     });
     return {
       hook: that.hook.bind(that),
+      if: that._if.bind(that),
+      trigger: that.trigger.bind(that),
     };
   },
 
