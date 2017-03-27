@@ -34,9 +34,16 @@ Flow.prototype = {
       }
     });
     return {
-      hook: that.hook.bind(that),
       if: that._if.bind(that),
       trigger: that.trigger.bind(that),
+      end: that.end.bind(that),
+    };
+  },
+
+  end: function() {
+    var that = this;
+    return {
+      if: that._if.bind(that),
     };
   },
 
