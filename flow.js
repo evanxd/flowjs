@@ -20,7 +20,6 @@ Flow.prototype = {
     });
     return {
       if: that._if.bind(that),
-      trigger: that.trigger.bind(that),
     };
   },
 
