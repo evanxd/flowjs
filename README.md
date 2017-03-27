@@ -4,8 +4,8 @@ A Webhook-featured workflow automation framework.
 ## Samples
 Create a workflow for employees to apply for expenditure.
 ```js
-var hook = new Webhook();
-hook.hook('/expenditure')
+var flow = new Workflow();
+flow.hook('/expenditure')
     .if(data => { return employee.isLevelOne(data.from) })
       .trigger(data.applicant, 'application.html')
       .trigger('level-2@samples.com', 'ask-approval.html')
