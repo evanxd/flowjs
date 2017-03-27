@@ -7,14 +7,15 @@ Create a workflow for employees to apply for expenditure.
 var hook = new Webhook();
 hook.hook('/expenditure')
     .if(data => { return employee.isLevelOne(data.from) })
-      .tigger(data.applicant, 'application.html')
-      .tigger('level-2@samples.com', 'ask-approval.html')
+      .trigger(data.applicant, 'application.html')
+      .trigger('level-2@samples.com', 'ask-approval.html')
     .if(data => { return data.from === 'level-2@samples.com' })
-      .tigger(data.applicant, 'application.html')
-      .tigger('level-3@samples.com', 'ask-approval.html')
+      .trigger(data.applicant, 'application.html')
+      .trigger('level-3@samples.com', 'ask-approval.html')
     .if(data => { return data.from === 'level-3@samples.com' })
-      .tigger(data.applicant, 'application.html')
-      .tigger('level-4@samples.com', 'ask-approval.html')
+      .trigger(data.applicant, 'application.html')
+      .trigger('level-4@samples.com', 'ask-approval.html')
     .if(data => { return data.from === 'level-4@samples.com' })
-      .tigger(data.applicant, 'got-approval.html');
+      .trigger(data.applicant, 'got-approval.html');
+      .trigger('secretary@samples.com', 'got-approval.html')
 ```
