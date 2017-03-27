@@ -9,8 +9,8 @@ var flow = new flowjs.Flow();
 var team = new flowjs.Team();
 flow.setup('/expenditure-application-workflow')
     .if(data => { return data.from === 'director@samples.com' })
-      .trigger(`mailto:${data.applicant}`, './got-approval.html')
-      .trigger('mailto:secretary@samples.com', './got-approval.html')
+      .mail(data.applicant, './got-approval.html')
+      .mail('secretary@samples.com', './got-approval.html')
     .if(data => { return true })
-      .trigger(`mailto:${team.findManager(data.from).email}`, './ask-approval.html');
+      .mail(team.findManager(data.from).email, './ask-approval.html');
 ```
