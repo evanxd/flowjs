@@ -1,10 +1,10 @@
-# webhook
+# Flow.js
 A Webhook-featured workflow automation framework.
 
 ## Samples
 Create a workflow for employees to apply for expenditure.
 ```js
-var flow = new Workflow();
+var flow = new Flow();
 flow.hook('/expenditure')
     .if(data => { return employee.isLevelOne(data.from) })
       .trigger(data.applicant, 'application.html')
