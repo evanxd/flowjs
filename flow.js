@@ -21,6 +21,7 @@ Flow.prototype = {
       to: toEmail,
       subject: subject,
       text: content,
+      attachment: { data: `<html>${content}</html>`, alternative: true }
     };
     this._mailServer.send(message, (err, message) => { console.log(err || message); });
   },
