@@ -43,13 +43,13 @@ flow.setup('/expenditure-application-workflow', (data) => {
 #### Version 3
 ```xml
 <flow setup="expenditure-application-workflow">
-  <if condition="data.fromEmail === data.applicantEmail">
+  <if condition="${data.fromEmail === data.applicantEmail}">
     <mail to="${findManager(data.fromEmail).email}" content="./ask-approval.html" />
   </if>
-  <if condition="data.fromEmail != 'director@samples.com' && data.approved">
+  <if condition="${data.fromEmail != 'director@samples.com' && data.approved}">
     <mail to="${findManager(data.fromEmail).email}" content="./ask-approval.html" />
   </if>
-  <if condition="data.fromEmail === 'director@samples.com' && data.approved">
+  <if condition="${data.fromEmail === 'director@samples.com' && data.approved}">
     <mail to="${data.applicantEmail}" content="./got-approval.html" />
     <mail to="secretary@samples.com" content="./got-approval.html" />
   </if>
