@@ -20,3 +20,18 @@ flow.setup('/expenditure-application-workflow')
       .mail(data.applicantEmail, './got-approval.html')
       .mail('secretary@samples.com', './got-approval.html');
 ```
+
+```js
+flow.setup('/expenditure-application-workflow', (data) => {
+  if (data.fromEmail === data.applicantEmail) {
+    mail(team.findManager(data.fromEmail).email, './ask-approval.html');
+  }
+  if (data.fromEmail != 'director@samples.com' && data.approved) {
+    mail(team.findManager(data.fromEmail).email, './ask-approval.html');
+  }
+  if (return data.fromEmail === 'director@samples.com' && data.approved) {
+    mail(data.applicantEmail, './got-approval.html')
+    mail('secretary@samples.com', './got-approval.html');
+  }
+});
+```
