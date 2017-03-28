@@ -1,57 +1,40 @@
 'use strict';
 
 var express = require('express');
+var email = require('emailjs');
 
-function Flow(options) {
-  this._promise = Promise.resolve();
+function Flow(options = {}) {
+  this._app = express();
+  this._options = options;
+  if (options.email && options.email.user &&
+      options.email.password && options.email.host) {
+    email.server.connect({
+     user: options.email.user, password: options.email.password,
+     host: options.email.host, ssl: options.email.ssl
+    });
+  }
 }
 
 Flow.prototype = {
-  _promise: null,
-  _webhook: null,
+  _app: null,
+  _mailServer: null,
+  _options: null,
 
-  hook: function(path, type) {
-    var that = this;
-    if (type === 'web' && !this._webhook) {
-      this._webhook = express();
-    }
-    this._promise = this._promise.then(() => {
-      return Promise.resolve(path, type);
+  setup: function(path, callback) {
+    this._app.route(path).post(function(req, res) {
+      callback && callback(req.body);
+      res.jsonp({ result: 'success' });
     });
-    return {
-      if: that._if.bind(that),
-    };
   },
 
-  trigger: function(callback, data) {
-    var that = this;
-    this._promise = this._promise.then((path, type)  => {
-      if (type === 'web') {
-        this._webhook.get(path, (req, res)=> {
-          // Send email here.
-          res.send();
-        });
-      }
-    });
-    return {
-      if: that._if.bind(that),
-      trigger: that.trigger.bind(that),
-      end: that.end.bind(that),
+  mail: function(toEmail, subject, content) {
+    var message = {
+      from: this._options.email && this._options.email.address ? this._options.email.address : null, 
+      to: toEmail,
+      subject: subject,
+      text: content,
     };
-  },
-
-  end: function() {
-    var that = this;
-    return {
-      if: that._if.bind(that),
-    };
-  },
-
-  _if: function(callback) {
-    var that = this;
-    return {
-      trigger: that.trigger.bind(that),
-    };
+    this._mailServer.send(message, (err, message) => { console.log(err || message); });
   },
 };
 
