@@ -9,7 +9,9 @@ var flow = new flowjs.Flow(); // It helps create automation workflows.
 var team = new flowjs.Team(); // It helps get team members information.
 ```
 
-Create a workflow for employees to apply for expenditure.
+### Create a workflow for employees to apply for expenditure.
+
+#### Version 1
 ```js
 flow.setup('/expenditure-application-workflow')
     .if(data => { return data.fromEmail === data.applicantEmail })
@@ -21,6 +23,7 @@ flow.setup('/expenditure-application-workflow')
       .mail('secretary@samples.com', './got-approval.html');
 ```
 
+#### Version 2
 ```js
 flow.setup('/expenditure-application-workflow', (data) => {
   if (data.fromEmail === data.applicantEmail) {
