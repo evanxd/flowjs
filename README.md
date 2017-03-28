@@ -2,11 +2,15 @@
 A Webhook-featured workflow automation framework.
 
 ## Samples
-Create a workflow for employees to apply for expenditure.
+Initialize the Flow and Team object instances.
 ```js
 var flowjs = require('node-flowjs');
-var flow = new flowjs.Flow();
-var team = new flowjs.Team();
+var flow = new flowjs.Flow(); // It helps create automation workflows.
+var team = new flowjs.Team(); // It helps get team members information.
+```
+
+Create a workflow for employees to apply for expenditure.
+```js
 flow.setup('/expenditure-application-workflow')
     .if(data => { return data.from === 'director@samples.com' && data.approved })
       .mail(data.applicant, './got-approval.html')
