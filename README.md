@@ -8,9 +8,9 @@ var flowjs = require('node-flowjs');
 var flow = new flowjs.Flow();
 var team = new flowjs.Team();
 flow.setup('/expenditure-application-workflow')
-    .if(data => { return data.from === 'director@samples.com' })
+    .if(data => { return data.from === 'director@samples.com' && data.approved })
       .mail(data.applicant, './got-approval.html')
       .mail('secretary@samples.com', './got-approval.html')
-    .if(data => { return true })
+    .if(data => { return data.approved })
       .mail(team.findManager(data.from).email, './ask-approval.html');
 ```
