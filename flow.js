@@ -9,8 +9,8 @@ Flow.prototype = {
   _mailServer: null,
 
   setup: function(path, callback) {
-    this._app.route(path).post(function(req, res) {
-      callback && callback(req.body);
+    this._app.route(path).get(function(req, res) {
+      callback && callback(req.query);
       res.jsonp({ result: 'success' });
     });
   },
