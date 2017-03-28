@@ -17,6 +17,6 @@ flow.setup('/expenditure-application-workflow')
       .mail('secretary@samples.com', './got-approval.html')
     .if(data => { return data.approved })
       .mail(team.findManager(data.fromEmail).email, './ask-approval.html');
-    .if(data => { return data.fromEmail === data.applicantEmail })
+    .if(data => { return true })
       .mail(team.findManager(data.fromEmail).email, './ask-approval.html');
 ```
