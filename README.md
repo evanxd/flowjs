@@ -33,7 +33,7 @@ flow.setup('/expenditure-application-workflow', (data) => {
   if (data.fromEmail != 'director@samples.com' && data.approved) {
     flow.mail(team.findManager(data.fromEmail).email, './ask-approval.html');
   }
-  if (return data.fromEmail === 'director@samples.com' && data.approved) {
+  if (data.fromEmail === 'director@samples.com' && data.approved) {
     flow.mail(data.applicantEmail, './got-approval.html')
     flow.mail('secretary@samples.com', './got-approval.html');
   }
