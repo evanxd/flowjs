@@ -17,7 +17,7 @@ Flow.prototype = {
 
   mail: function(toEmail, subject, content) {
     var message = {
-      from: config.email.address, 
+      from: config.email.address,
       to: toEmail,
       subject: subject,
       text: content,
