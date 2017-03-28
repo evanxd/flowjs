@@ -40,7 +40,7 @@ flow.setup('/expenditure-application-workflow', (data) => {
 });
 ```
 
-### Version 3
+#### Version 3
 ```xml
 <flow setup="expenditure-application-workflow">
   <if condition="data.fromEmail === data.applicantEmail">
