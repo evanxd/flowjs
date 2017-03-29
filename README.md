@@ -7,7 +7,7 @@ A Webhook-featured workflow automation framework.
 ```js
 var flowjs = require('node-flowjs');
 var flow = new flowjs.Flow(); // It helps create automation workflows.
-var team = new flowjs.Team(); // It helps get team members information.
+var org = new flowjs.Organization(); // It helps get team members information.
 ```
 
 ### Create a workflow for employees to apply for expenditure
@@ -16,10 +16,10 @@ var team = new flowjs.Team(); // It helps get team members information.
 ```js
 flow.setup('/expenditure-application-workflow', (data) => {
   if (data.fromEmail === data.applicantEmail) {
-    flow.mail(team.findManager(data.fromEmail).email, 'Ask for The Approval', 'Ask for The Approval');
+    flow.mail(org.findManager(data.fromEmail).email, 'Ask for The Approval', 'Ask for The Approval');
   }
   if (data.fromEmail != 'director@samples.com' && data.approved) {
-    flow.mail(team.findManager(data.fromEmail).email, 'Ask for The Approval', 'Ask for The Approval');
+    flow.mail(org.findManager(data.fromEmail).email, 'Ask for The Approval', 'Ask for The Approval');
   }
   if (data.fromEmail === 'director@samples.com' && data.approved) {
     flow.mail(data.applicantEmail, 'Got The Approval', 'Got The Approval')
