@@ -38,7 +38,12 @@ Flow.prototype._mailServer = mailServer;
 Flow.prototype._orgDoc = orgDoc;
 Organization.prototype._orgDoc = orgDoc;
 
+var flow = new Flow();
+
 module.exports = {
-  Flow: Flow,
-  Organization: Organization,
+  setup: flow.setup.bind(flow),
+  actions: {
+    mail: flow.mail.bind(flow),
+  },
+  organization: new Organization(),
 };
