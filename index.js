@@ -1,10 +1,12 @@
 'use strict';
 
-var path = require('path');
-var fs = require('fs');
-var express = require('express');
 var bodyParser = require('body-parser');
 var email = require('emailjs');
+var express = require('express');
+var fs = require('fs');
+var jsdom = require('jsdom');
+var path = require('path');
+
 var Flow = require('./lib/flow');
 var Organization = require('./lib/organization');
 var parentDir = path.dirname(module.parent.filename);
@@ -27,10 +29,14 @@ if (config.email && config.email.user &&
   });
 }
 
+var memberXML = fs.readFileSync(`${parentDir}/member.xml`, 'utf-8');
+var orgDoc = jsdom.jsdom(memberXML);
+
 Flow.prototype._app = app;
-Flow.prototype._mailServer = mailServer;
 Flow.prototype._config = config;
-Organization.prototype._memberXML = fs.readFileSync(`${parentDir}/member.xml`, 'utf-8');
+Flow.prototype._mailServer = mailServer;
+Flow.prototype._orgDoc = orgDoc;
+Organization.prototype._orgDoc = orgDoc;
 
 module.exports = {
   Flow: Flow,
