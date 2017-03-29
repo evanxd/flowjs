@@ -2,13 +2,13 @@
 
 var path = require('path');
 var fs = require('fs');
-var parentDir = path.dirname(module.parent.filename);
-var config = require(`${parentDir}/flowjs.json`);
 var express = require('express');
 var bodyParser = require('body-parser');
 var email = require('emailjs');
 var Flow = require('./lib/flow');
 var Organization = require('./lib/organization');
+var parentDir = path.dirname(module.parent.filename);
+var config = require(`${parentDir}/flowjs.json`);
 
 var app = express();
 app.use(bodyParser.json());
