@@ -1,6 +1,9 @@
 'use strict';
 
-var config = require('./flowjs.json');
+var path = require('path');
+var fs = require('fs');
+var parentDir = path.dirname(module.parent.filename);
+var config = require(`${parentDir}/flowjs.json`);
 var express = require('express');
 var bodyParser = require('body-parser');
 var email = require('emailjs');
@@ -26,6 +29,8 @@ if (config.email && config.email.user &&
 
 Flow.prototype._app = app;
 Flow.prototype._mailServer = mailServer;
+Flow.prototype._config = config;
+Organization.prototype._memberXML = fs.readFileSync(`${parentDir}/member.xml`, 'utf-8');
 
 module.exports = {
   Flow: Flow,
