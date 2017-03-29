@@ -5,7 +5,7 @@ var express = require('express');
 var bodyParser = require('body-parser');
 var email = require('emailjs');
 var Flow = require('./flow');
-var Team = require('./team');
+var Organization = require('./organization');
 
 var app = express();
 app.use(bodyParser.json());
@@ -29,5 +29,5 @@ Flow.prototype._mailServer = mailServer;
 
 module.exports = {
   Flow: Flow,
-  Team: Team,
+  Organization: Organization,
 };
