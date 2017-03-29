@@ -3,11 +3,9 @@ A Webhook-featured workflow automation framework.
 
 ## Samples
 
-### Initialize the Flow and Team object instances
+### Initialize a flowjs instance
 ```js
-var flowjs = require('node-flowjs');
-var flow = new flowjs.Flow(); // It helps create automation workflows.
-var org = new flowjs.Organization(); // It helps get team members information.
+var flow = require('node-flowjs');
 ```
 
 ### Create a workflow for employees to apply for expenditure
@@ -16,14 +14,14 @@ var org = new flowjs.Organization(); // It helps get team members information.
 ```js
 flow.setup('/expenditure-application-workflow', (data) => {
   if (data.fromEmail === data.applicantEmail) {
-    flow.mail(org.findManager(data.fromEmail).email, 'Ask for The Approval', 'Ask for The Approval');
+    flow.actions.mail(flow.organization.findManager(data.fromEmail).email, 'Ask for The Approval', 'Ask for The Approval');
   }
   if (data.fromEmail != 'director@samples.com' && data.approved) {
-    flow.mail(org.findManager(data.fromEmail).email, 'Ask for The Approval', 'Ask for The Approval');
+    flow.actions.mail(flow.organization.findManager(data.fromEmail).email, 'Ask for The Approval', 'Ask for The Approval');
   }
   if (data.fromEmail === 'director@samples.com' && data.approved) {
-    flow.mail(data.applicantEmail, 'Got The Approval', 'Got The Approval')
-    flow.mail('secretary@samples.com', 'Got The Approval', 'Got The Approval');
+    flow.actions.mail(data.applicantEmail, 'Got The Approval', 'Got The Approval')
+    flow.actions.mail('secretary@samples.com', 'Got The Approval', 'Got The Approval');
   }
 });
 ```
