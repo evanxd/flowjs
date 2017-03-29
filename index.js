@@ -4,8 +4,8 @@ var config = require('./flowjs.json');
 var express = require('express');
 var bodyParser = require('body-parser');
 var email = require('emailjs');
-var Flow = require('./flow');
-var Organization = require('./organization');
+var Flow = require('./lib/flow');
+var Organization = require('./lib/organization');
 
 var app = express();
 app.use(bodyParser.json());
