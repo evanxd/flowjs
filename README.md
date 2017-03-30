@@ -12,7 +12,7 @@ var flow = require('node-flowjs');
 
 #### JavaScript Version
 ```js
-flow.setup('/expenditure-application-workflow', data => {
+flow.setup('expenditure-application-workflow', data => {
   if (data.fromEmail === data.applicantEmail) {
     flow.actions.mail(flow.organization.findManager(data.fromEmail).email, 'Ask for The Approval', 'Ask for The Approval');
   }
