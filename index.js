@@ -46,10 +46,10 @@ Flow.prototype = {
 
   setup: function(workflowName, callback) {
     this._app.route(`/${workflowName}`).get((req, res) => {
-      var params = req.query;
-      if (params.apiKey === this._orgDoc.querySelector(`[email="${params.fromEmail}"]`)
-                                        .getAttribute('apiKey')) {
-        callback && callback(params);
+      var data = req.query;
+      if (data.apiKey === this._orgDoc.querySelector(`[email="${data.fromEmail}"]`)
+                                      .getAttribute('apiKey')) {
+        callback && callback(data);
         res.jsonp({ result: 'success', });
       } else {
         res.jsonp({ result: 'fail', message: 'The API key is incorrect.', });
