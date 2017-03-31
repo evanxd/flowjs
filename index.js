@@ -9,8 +9,10 @@ var fs = require('fs');
 var jsdom = require('jsdom');
 var path = require('path');
 var Actions = require('./lib/actions');
+var Mustache = require('mustache');
 var Organization = require('./lib/organization');
 var parentDir = path.dirname(module.parent.filename);
+var currentDir = path.dirname(module.filename);
 var config = require(`${parentDir}/flowjs.json`);
 
 function Flow() {
@@ -56,7 +58,7 @@ Flow.prototype = {
           if (!error) {
             data.webhookAddress = `http://${address}:${this._server.address().port}/${workflowName}`;
             callback && callback(data);
-            res.jsonp({ result: 'success', });
+            res.send(Mustache.render(fs.readFileSync(`${currentDir}/template/result.html`, 'utf-8'), { result: 'Success!' }));
           } else {
             res.jsonp({ result: 'fail', message: 'Cannot get address name.', });
           }
