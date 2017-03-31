@@ -3,6 +3,8 @@
 var bodyParser = require('body-parser');
 var email = require('emailjs');
 var express = require('express');
+var dns = require('dns');
+var os = require('os');
 var fs = require('fs');
 var jsdom = require('jsdom');
 var path = require('path');
@@ -16,7 +18,7 @@ function Flow() {
   app.use(bodyParser.json());
   app.use(bodyParser.urlencoded({ extended: true }));
   var port = config.webhook.port || 8080;
-  app.listen(port, function () {
+  this._server = app.listen(port, function () {
     console.log(`Flow.js is listening on port ${port}!`);
   });
   this._app = app;
@@ -43,14 +45,22 @@ Flow.prototype = {
   organization: null,
   _app: null,
   _orgDoc: null,
+  _server: null,
 
   setup: function(workflowName, callback) {
     this._app.route(`/${workflowName}`).get((req, res) => {
       var data = req.query;
-      if (data.apiKey === this._orgDoc.querySelector(`[email="${data.fromEmail}"]`)
+      if (data.apiKey === this._orgDoc.querySelector(`[email="${data.email}"]`)
                                       .getAttribute('apiKey')) {
-        callback && callback(data);
-        res.jsonp({ result: 'success', });
+        dns.lookup(os.hostname(), (error, address) => {
+          if (!error) {
+            data.webhookAddress = `http://${address}:${this._server.address().port}/${workflowName}`;
+            callback && callback(data);
+            res.jsonp({ result: 'success', });
+          } else {
+            res.jsonp({ result: 'fail', message: 'Cannot get address name.', });
+          }
+        });
       } else {
         res.jsonp({ result: 'fail', message: 'The API key is incorrect.', });
       }
