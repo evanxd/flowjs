@@ -5,9 +5,30 @@
     <title>Result</title>
 </head>
 <body>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/js-url/2.4.1/url.min.js"></script>
     <script>
-        alert("{{result}}");
+      var isConfirmed = confirm('Are you sure?');
+      if (isConfirmed) {
+        var xhttp = new XMLHttpRequest();
+        xhttp.onreadystatechange = function() {
+          if (this.readyState == 4 && this.status == 200) {
+            alert('Approved!');
+            window.close();
+          }
+        };
+        xhttp.open('post', '{{& webhookAddress}}', true);
+        xhttp.setRequestHeader('Content-Type', 'application/json');
+        xhttp.send(JSON.stringify({
+          email: url('?email'),
+          applicantEmail: url('?applicantEmail'),
+          items: url('?items'),
+          apiKey: url('?apiKey'),
+          approved: true,
+        }));
+      } else {
+        alert('Cancel!');
         window.close();
+      }
     </script>
 </body>
 </html>

@@ -20,7 +20,7 @@ function Flow() {
   app.use(bodyParser.json());
   app.use(bodyParser.urlencoded({ extended: true }));
   var port = config.webhook.port || 8080;
-  this._server = app.listen(port, function () {
+  app.listen(port, function () {
     console.log(`Flow.js is listening on port ${port}!`);
   });
   this._app = app;
@@ -38,6 +38,12 @@ function Flow() {
   }
   Organization.prototype._orgDoc = this._orgDoc;
 
+  dns.lookup(os.hostname(), (error, address) => {
+    if (!error) {
+      this._serverAddress = `http://${address}:${port}`;
+    }
+  });
+
   this.actions = new Actions();
   this.organization = new Organization();
 }
@@ -47,26 +53,33 @@ Flow.prototype = {
   organization: null,
   _app: null,
   _orgDoc: null,
-  _server: null,
+  _serverAddress: null,
 
   setup: function(workflowName, callback) {
-    this._app.route(`/${workflowName}`).get((req, res) => {
-      var data = req.query;
-      var receiver = this._orgDoc.querySelector(`[email="${data.email}"]`);
-      if (receiver && data.apiKey === receiver.getAttribute('apiKey')) {
-        dns.lookup(os.hostname(), (error, address) => {
-          if (!error) {
-            data.webhookAddress = `http://${address}:${this._server.address().port}/${workflowName}`;
-            callback && callback(data);
-            res.send(Mustache.render(fs.readFileSync(`${currentDir}/template/result.html`, 'utf-8'), { result: 'Success!' }));
-          } else {
-            res.jsonp({ result: 'fail', message: 'Cannot get address name.', });
-          }
-        });
-      } else {
-        res.jsonp({ result: 'fail', message: 'The API key is incorrect.', });
-      }
-    });
+    this._app.route(`/${workflowName}`)
+      .get((req, res) => {
+        var data = req.query;
+        var webhookAddress = `${this._serverAddress}/${workflowName}`;
+        var receiver = this._orgDoc.querySelector(`[email="${data.email}"]`);
+        if (receiver && data.apiKey === receiver.getAttribute('apiKey')) {
+          res.send(Mustache.render(fs.readFileSync(`${currentDir}/template/result.html`, 'utf-8'), {
+            webhookAddress: webhookAddress,
+          }));
+        } else {
+          res.jsonp({ result: 'fail', message: 'The API key is incorrect.', });
+        }
+      })
+      .post((req, res) => {
+        var data = req.body;
+        var receiver = this._orgDoc.querySelector(`[email="${data.email}"]`);
+        if (receiver && data.apiKey === receiver.getAttribute('apiKey')) {
+          data.webhookAddress = `${this._serverAddress}/${workflowName}`;
+          callback && callback(data);
+          res.jsonp({ result: 'success', });
+        } else {
+          res.jsonp({ result: 'fail', message: 'The API key is incorrect.', });
+        }
+      });
   },
 };
 
