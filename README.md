@@ -13,15 +13,17 @@ var flow = require('node-flowjs');
 #### JavaScript Version
 ```js
 flow.setup('expenditure-application-workflow', data => {
-  if (data.fromEmail === data.applicantEmail) {
-    flow.actions.mail(flow.organization.findManager(data.fromEmail).email, 'Ask for The Approval', 'Ask for The Approval');
+  if (data.email === data.applicantEmail) {
+    flow.actions.mail(flow.organization.findManager(data.email).email,
+    	'Ask for The Approval', './ask-approval.html', data);
   }
-  if (data.fromEmail != 'director@samples.com' && data.approved) {
-    flow.actions.mail(flow.organization.findManager(data.fromEmail).email, 'Ask for The Approval', 'Ask for The Approval');
+  if (data.email != 'director@your-org.com' && data.approved) {
+    flow.actions.mail(flow.organization.findManager(data.email).email,
+    	'Ask for The Approval', './ask-approval.html', data);
   }
-  if (data.fromEmail === 'director@samples.com' && data.approved) {
-    flow.actions.mail(data.applicantEmail, 'Got The Approval', 'Got The Approval')
-    flow.actions.mail('secretary@samples.com', 'Got The Approval', 'Got The Approval');
+  if (data.email === 'director@your-org.com' && data.approved) {
+    flow.actions.mail(data.applicantEmail,
+      'Got The Approval', './got-approval.html', data);
   }
 });
 ```
