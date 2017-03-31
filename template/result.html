@@ -8,11 +8,12 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/js-url/2.4.1/url.min.js"></script>
     <script>
       var isConfirmed = confirm('Are you sure?');
+      var isApproved = url('?approved') === 'true';
       if (isConfirmed) {
         var xhttp = new XMLHttpRequest();
         xhttp.onreadystatechange = function() {
           if (this.readyState == 4 && this.status == 200) {
-            alert('Approved!');
+            isApproved ? alert('Approved!') : alert('Rejected!');
             window.close();
           }
         };
@@ -23,7 +24,7 @@
           applicantEmail: url('?applicantEmail'),
           items: url('?items'),
           apiKey: url('?apiKey'),
-          approved: true,
+          approved: isApproved,
         }));
       } else {
         alert('You could approve it next time at the email.');
