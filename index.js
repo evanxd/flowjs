@@ -50,8 +50,8 @@ Flow.prototype = {
   setup: function(workflowName, callback) {
     this._app.route(`/${workflowName}`).get((req, res) => {
       var data = req.query;
-      if (data.apiKey === this._orgDoc.querySelector(`[email="${data.email}"]`)
-                                      .getAttribute('apiKey')) {
+      var receiver = this._orgDoc.querySelector(`[email="${data.email}"]`);
+      if (receiver && data.apiKey === receiver.getAttribute('apiKey')) {
         dns.lookup(os.hostname(), (error, address) => {
           if (!error) {
             data.webhookAddress = `http://${address}:${this._server.address().port}/${workflowName}`;
