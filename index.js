@@ -11,6 +11,7 @@ var path = require('path');
 var Actions = require('./lib/actions');
 var Mustache = require('mustache');
 var Organization = require('./lib/organization');
+var Workflows = require('./lib/workflows');
 var parentDir = path.dirname(module.parent.filename);
 var currentDir = path.dirname(module.filename);
 var config = require(`${parentDir}/flowjs.json`);
@@ -74,7 +75,13 @@ Flow.prototype = {
         var receiver = this._orgDoc.querySelector(`[email="${data.email}"]`);
         if (receiver && data.apiKey === receiver.getAttribute('apiKey')) {
           data.webhookAddress = `${this._serverAddress}/${workflowName}`;
-          callback && callback(data);
+          if (typeof callback === 'function') {
+            callback(data);
+          } else if (typeof callback === 'object') {
+            var workflow = callback.workflow || 'classic';
+            var workflows = new Workflows(this.actions, this.organization, callback);
+            workflows[workflow](data);
+          }
           res.jsonp({ result: 'success', });
         } else {
           res.jsonp({ result: 'fail', message: 'The API key is incorrect.', });
