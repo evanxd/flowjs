@@ -1,7 +1,7 @@
 {
   "name": "node-flowjs",
   "description": "A Webhook-featured workflow automation framework.",
-  "version": "0.0.9",
+  "version": "0.0.10",
   "author": {
     "name": "Evan Tseng",
     "email": "evan@tseng.io"
