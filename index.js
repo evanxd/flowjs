@@ -8,6 +8,7 @@ var os = require('os');
 var fs = require('fs');
 var jsdom = require('jsdom');
 var path = require('path');
+var shortid = require('shortid');
 var Actions = require('./lib/actions');
 var Mustache = require('mustache');
 var Organization = require('./lib/organization');
@@ -74,6 +75,7 @@ Flow.prototype = {
         var data = req.body;
         var receiver = this._orgDoc.querySelector(`[email="${data.email}"]`);
         if (receiver && data.apiKey === receiver.getAttribute('apiKey')) {
+          data.id = data.id || shortid.generate();
           data.webhookAddress = `${this._serverAddress}/${workflowName}`;
           if (typeof callback === 'function') {
             callback(data);
