@@ -3,13 +3,14 @@
 var bodyParser = require('body-parser');
 var email = require('emailjs');
 var express = require('express');
-var dns = require('dns');
-var os = require('os');
+var ip = require('ip');
 var fs = require('fs');
 var jsdom = require('jsdom');
 var path = require('path');
+var request = require('request');
 var shortid = require('shortid');
 var Actions = require('./lib/actions');
+var Mailhook = require('mailhook');
 var Mustache = require('mustache');
 var Organization = require('./lib/organization');
 var Workflows = require('./lib/workflows');
@@ -30,22 +31,21 @@ function Flow() {
   this._orgDoc = jsdom.jsdom(fs.readFileSync(`${parentDir}/member.xml`, 'utf-8'));
   Actions.prototype._config = config;
   if (config.mailhook && config.mailhook.user &&
-      config.mailhook.password && config.mailhook.smtpHost) {
+      config.mailhook.password && config.mailhook.smtpHost && config.mailhook.imapHost) {
     Actions.prototype._mailServer = email.server.connect({
      user: config.mailhook.user, password: config.mailhook.password,
      host: config.mailhook.smtpHost, ssl: config.mailhook.ssl
     });
+
+    this._mailhook = new Mailhook(config.mailhook.user, config.mailhook.password,
+                                config.mailhook.imapHost);
   } else {
     console.log('Has to input email information to send emails.');
   }
   Organization.prototype._orgDoc = this._orgDoc;
 
-  dns.lookup(os.hostname(), (error, address) => {
-    if (!error) {
-      this._serverAddress = `http://${address}:${port}`;
-    }
-  });
-
+  this._serverAddress = `http://${ip.address()}:${port}`;
+  console.log("this._serverAddress: " + this._serverAddress);
   this.actions = new Actions();
   this.organization = new Organization();
 }
@@ -54,14 +54,35 @@ Flow.prototype = {
   actions: null,
   organization: null,
   _app: null,
+  _mailhook: null,
   _orgDoc: null,
   _serverAddress: null,
 
   setup: function(workflowName, callback) {
+    var webhookAddress = `${this._serverAddress}/${workflowName}`;
+
+    this._mailhook.hook(config.mailhook.fromEmail).trigger(data => {
+      if (data.subject === workflowName) {
+        var doc = jsdom.jsdom(data.html);
+        // The data field in google form should be the email of the applicant.
+        var mailAddress = doc.querySelectorAll('table td')[1].textContent;
+        request.post({
+          url: webhookAddress,
+          json: {
+            email: mailAddress,
+            applicantEmail: mailAddress,
+            apiKey: this.organization.getInfo(mailAddress).apiKey,
+          },
+        },
+        (error, response, body) => {
+          error ? console.log(error.message) : console.log(body);
+        });
+      }
+    });
+
     this._app.route(`/${workflowName}`)
       .get((req, res) => {
         var data = req.query;
-        var webhookAddress = `${this._serverAddress}/${workflowName}`;
         var receiver = this._orgDoc.querySelector(`[email="${data.email}"]`);
         if (receiver && data.apiKey === receiver.getAttribute('apiKey')) {
           res.send(Mustache.render(fs.readFileSync(`${currentDir}/template/result.html`, 'utf-8'), {
@@ -76,7 +97,7 @@ Flow.prototype = {
         var receiver = this._orgDoc.querySelector(`[email="${data.email}"]`);
         if (receiver && data.apiKey === receiver.getAttribute('apiKey')) {
           data.id = data.id || shortid.generate();
-          data.webhookAddress = `${this._serverAddress}/${workflowName}`;
+          data.webhookAddress = webhookAddress;
           if (typeof callback === 'function') {
             callback(data);
           } else if (typeof callback === 'object') {
