@@ -29,11 +29,11 @@ function Flow() {
 
   this._orgDoc = jsdom.jsdom(fs.readFileSync(`${parentDir}/member.xml`, 'utf-8'));
   Actions.prototype._config = config;
-  if (config.email && config.email.user &&
-      config.email.password && config.email.host) {
+  if (config.mailhook && config.mailhook.user &&
+      config.mailhook.password && config.mailhook.smtpHost) {
     Actions.prototype._mailServer = email.server.connect({
-     user: config.email.user, password: config.email.password,
-     host: config.email.host, ssl: config.email.ssl
+     user: config.mailhook.user, password: config.mailhook.password,
+     host: config.mailhook.smtpHost, ssl: config.mailhook.ssl
     });
   } else {
     console.log('Has to input email information to send emails.');
