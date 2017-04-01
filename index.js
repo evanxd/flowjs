@@ -71,6 +71,7 @@ Flow.prototype = {
           json: {
             email: mailAddress,
             applicantEmail: mailAddress,
+            application: data.html,
             apiKey: this.organization.getInfo(mailAddress).apiKey,
           },
         },
