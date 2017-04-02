@@ -45,7 +45,6 @@ function Flow() {
   Organization.prototype._orgDoc = this._orgDoc;
 
   this._serverAddress = `http://${ip.address()}:${port}`;
-  console.log("this._serverAddress: " + this._serverAddress);
   this.actions = new Actions();
   this.organization = new Organization();
 }
@@ -60,26 +59,6 @@ Flow.prototype = {
 
   setup: function(workflowName, callback) {
     var webhookAddress = `${this._serverAddress}/${workflowName}`;
-
-    this._mailhook.hook(config.mailhook.fromEmail).trigger(data => {
-      if (data.subject === workflowName) {
-        var doc = jsdom.jsdom(data.html);
-        // The data field in google form should be the email of the applicant.
-        var mailAddress = doc.querySelectorAll('table td')[1].textContent;
-        request.post({
-          url: webhookAddress,
-          json: {
-            email: mailAddress,
-            applicantEmail: mailAddress,
-            application: data.html,
-            apiKey: this.organization.getInfo(mailAddress).apiKey,
-          },
-        },
-        (error, response, body) => {
-          error ? console.log(error.message) : console.log(body);
-        });
-      }
-    });
 
     this._app.route(`/${workflowName}`)
       .get((req, res) => {
@@ -111,6 +90,34 @@ Flow.prototype = {
           res.jsonp({ result: 'fail', message: 'The API key is incorrect.', });
         }
       });
+  },
+
+  mailhook: function(params) {
+    var that = this;
+    var hook = this._mailhook.hook(params.fromEmail);
+    return {
+      trigger: function(workflowName, triggerParams) {
+        var webhookAddress = `${that._serverAddress}/${workflowName}`;
+        hook.trigger(data => {
+          if (data.subject === params.subject) {
+            var doc = jsdom.jsdom(data.html);
+            var applicantEmail = doc.querySelector(triggerParams.applicantEmailSelector).textContent;
+            request.post({
+              url: webhookAddress,
+              json: {
+                email: applicantEmail,
+                applicantEmail: applicantEmail,
+                application: data.html,
+                apiKey: that.organization.getInfo(applicantEmail).apiKey,
+              },
+            },
+            (error, response, body) => {
+              error ? console.log(error.message) : console.log(body);
+            });
+          }
+        });
+      },
+    }
   },
 };
 
