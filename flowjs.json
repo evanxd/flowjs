@@ -2,11 +2,12 @@
   "webhook": {
     "port": 8080
   },
-  "email": {
-    "address": "Your Name <user@your-email.com>",
-    "user": "user",
+  "mailhook": {
+    "address": "Lisa <lisa@your-org.com>",
+    "user": "lisa",
     "password": "password",
-    "host": "smtp.your-email.com",
+    "smtpHost": "smtp.your-org.com",
+    "imapHost": "imap.your-org.com",
     "ssl": true
   }
 }
