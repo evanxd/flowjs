@@ -35,9 +35,6 @@ function Flow() {
      user: config.mailhook.user, password: config.mailhook.password,
      host: config.mailhook.smtpHost, ssl: config.mailhook.ssl
     });
-
-    this._mailhook = new Mailhook(config.mailhook.user, config.mailhook.password,
-                                config.mailhook.imapHost);
   } else {
     console.log('Has to input email information to send emails.');
   }
@@ -53,8 +50,8 @@ Flow.prototype = {
   _serverAddress: null,
 
   setup: function(workflowName, callback) {
+    var that = this;
     var webhookAddress = `${this._serverAddress}/${workflowName}`;
-
     this._app.route(`/${workflowName}`)
       .get((req, res) => {
         var data = req.query;
@@ -86,34 +83,36 @@ Flow.prototype = {
           res.jsonp({ result: 'fail', message: 'The API key is incorrect.', });
         }
       });
+    return {
+      mailhook: that.mailhook.bind(that),
+    };
   },
 
+  // FIXME: This should be a private method.
   mailhook: function(params) {
-    var that = this;
-    var hook = this._mailhook.hook(params.fromEmail);
-    return {
-      trigger: function(workflowName, triggerParams) {
-        var webhookAddress = `${that._serverAddress}/${workflowName}`;
-        hook.trigger(data => {
-          if (data.subject === params.subject) {
-            var doc = jsdom.jsdom(data.html);
-            var applicantId = doc.querySelector(triggerParams.applicantIdSelector).textContent;
-            request.post({
-              url: webhookAddress,
-              json: {
-                senderId: applicantId,
-                applicantId: applicantId,
-                application: data.html,
-                apiKey: members[applicantId].apiKey,
-              },
+    this._mailhook = this._mailhook ||
+                     new Mailhook(config.mailhook.user, config.mailhook.password,
+                                  config.mailhook.imapHost);
+    this._mailhook.hook(params.fromEmail)
+      .trigger(data => {
+        if (data.subject === params.subject) {
+          var applicantId = jsdom.jsdom(data.html)
+                                 .querySelector(params.applicantIdSelector).textContent;
+          request.post({
+            // FIXME: Do not use params.subject to build the webhook address.
+            url: `${this._serverAddress}/${params.subject}`,
+            json: {
+              senderId: applicantId,
+              applicantId: applicantId,
+              application: data.html,
+              apiKey: members[applicantId].apiKey,
             },
-            (error, response, body) => {
-              error ? console.log(error.message) : console.log(body);
-            });
-          }
-        });
-      },
-    }
+          },
+          (error, response, body) => {
+            error ? console.log(error.message) : console.log(body);
+          });
+        }
+      });
   },
 };
 
