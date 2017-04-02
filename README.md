@@ -10,7 +10,7 @@ var flow = require('node-flowjs');
 Create a workflow for employees to apply for expenditure. You could check and use the full example with the [flowjs-example][flowjs-example] repository.
 ```js
 flow.setup('expenditure-application-workflow', {
-  approverEmail:        'wowens@your-org.com',
+  approverId:           'wowens',
   requestMailSubject:   'Request An Approval',
   requestMailContent:   './template/request.html',
   rejectionMailSubject: 'The Application Is Rejected',
