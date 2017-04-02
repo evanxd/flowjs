@@ -12,11 +12,11 @@ var shortid = require('shortid');
 var Actions = require('./lib/actions');
 var Mailhook = require('mailhook');
 var Mustache = require('mustache');
-var Organization = require('./lib/organization');
 var Workflows = require('./lib/workflows');
-var userDir = path.dirname(module.parent.filename);
 var currentDir = path.dirname(module.filename);
+var userDir = path.dirname(module.parent.filename);
 var config = require(`${userDir}/flowjs.json`);
+var members = require(`${userDir}/members.json`);
 
 function Flow() {
   var app = express();
@@ -28,7 +28,6 @@ function Flow() {
   });
   this._app = app;
 
-  this._orgDoc = jsdom.jsdom(fs.readFileSync(`${userDir}/member.xml`, 'utf-8'));
   Actions.prototype._config = config;
   if (config.mailhook && config.mailhook.user &&
       config.mailhook.password && config.mailhook.smtpHost && config.mailhook.imapHost) {
@@ -42,19 +41,15 @@ function Flow() {
   } else {
     console.log('Has to input email information to send emails.');
   }
-  Organization.prototype._orgDoc = this._orgDoc;
 
   this._serverAddress = `http://${ip.address()}:${port}`;
   this.actions = new Actions();
-  this.organization = new Organization();
 }
 
 Flow.prototype = {
   actions: null,
-  organization: null,
   _app: null,
   _mailhook: null,
-  _orgDoc: null,
   _serverAddress: null,
 
   setup: function(workflowName, callback) {
@@ -63,8 +58,7 @@ Flow.prototype = {
     this._app.route(`/${workflowName}`)
       .get((req, res) => {
         var data = req.query;
-        var receiver = this._orgDoc.querySelector(`[email="${data.email}"]`);
-        if (receiver && data.apiKey === receiver.getAttribute('apiKey')) {
+        if (data.apiKey === members[data.senderId].apiKey) {
           res.send(Mustache.render(fs.readFileSync(`${currentDir}/template/result.html`, 'utf-8'), {
             webhookAddress: webhookAddress,
           }));
@@ -74,8 +68,7 @@ Flow.prototype = {
       })
       .post((req, res) => {
         var data = req.body;
-        var receiver = this._orgDoc.querySelector(`[email="${data.email}"]`);
-        if (receiver && data.apiKey === receiver.getAttribute('apiKey')) {
+        if (data.apiKey === members[data.senderId].apiKey) {
           if (!data.id) {
             data.id = shortid.generate();
             fs.writeFileSync(`${userDir}/attachments/${data.id}.html`, data.application, 'utf-8');
@@ -85,7 +78,7 @@ Flow.prototype = {
             callback(data);
           } else if (typeof callback === 'object') {
             var workflow = callback.workflow || 'classic';
-            var workflows = new Workflows(this.actions, this.organization, callback);
+            var workflows = new Workflows(this.actions, callback);
             workflows[workflow](data);
           }
           res.jsonp({ result: 'success', });
@@ -104,14 +97,14 @@ Flow.prototype = {
         hook.trigger(data => {
           if (data.subject === params.subject) {
             var doc = jsdom.jsdom(data.html);
-            var applicantEmail = doc.querySelector(triggerParams.applicantEmailSelector).textContent;
+            var applicantId = doc.querySelector(triggerParams.applicantIdSelector).textContent;
             request.post({
               url: webhookAddress,
               json: {
-                email: applicantEmail,
-                applicantEmail: applicantEmail,
+                senderId: applicantId,
+                applicantId: applicantId,
                 application: data.html,
-                apiKey: that.organization.getInfo(applicantEmail).apiKey,
+                apiKey: members[applicantId].apiKey,
               },
             },
             (error, response, body) => {
