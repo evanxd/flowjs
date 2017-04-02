@@ -7,7 +7,7 @@ Initialize a flowjs instance.
 var flow = require('node-flowjs');
 ```
 
-Create a workflow for employees to apply for expenditure. You could check and use the full example with the [example project][flowjs-example].
+Create a workflow for employees to apply for expenditure. You could check and use the full example with the [flowjs-example][flowjs-example] repository.
 ```js
 flow.setup('expenditure-application-workflow', {
   approverEmail:        'wowens@your-org.com',
