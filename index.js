@@ -14,9 +14,9 @@ var Mailhook = require('mailhook');
 var Mustache = require('mustache');
 var Organization = require('./lib/organization');
 var Workflows = require('./lib/workflows');
-var parentDir = path.dirname(module.parent.filename);
+var userDir = path.dirname(module.parent.filename);
 var currentDir = path.dirname(module.filename);
-var config = require(`${parentDir}/flowjs.json`);
+var config = require(`${userDir}/flowjs.json`);
 
 function Flow() {
   var app = express();
@@ -28,7 +28,7 @@ function Flow() {
   });
   this._app = app;
 
-  this._orgDoc = jsdom.jsdom(fs.readFileSync(`${parentDir}/member.xml`, 'utf-8'));
+  this._orgDoc = jsdom.jsdom(fs.readFileSync(`${userDir}/member.xml`, 'utf-8'));
   Actions.prototype._config = config;
   if (config.mailhook && config.mailhook.user &&
       config.mailhook.password && config.mailhook.smtpHost && config.mailhook.imapHost) {
@@ -76,7 +76,10 @@ Flow.prototype = {
         var data = req.body;
         var receiver = this._orgDoc.querySelector(`[email="${data.email}"]`);
         if (receiver && data.apiKey === receiver.getAttribute('apiKey')) {
-          data.id = data.id || shortid.generate();
+          if (!data.id) {
+            data.id = shortid.generate();
+            fs.writeFileSync(`${userDir}/attachments/${data.id}.html`, data.application, 'utf-8');
+          }
           data.webhookAddress = webhookAddress;
           if (typeof callback === 'function') {
             callback(data);
