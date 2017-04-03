@@ -1,7 +1,6 @@
 'use strict';
 
 var bodyParser = require('body-parser');
-var email = require('emailjs');
 var express = require('express');
 var ip = require('ip');
 var fs = require('fs');
@@ -27,20 +26,8 @@ function Flow() {
     console.log(`Flow.js is listening on port ${port}!`);
   });
   this._app = app;
-
-  Actions.prototype._config = config;
-  if (config.mailhook && config.mailhook.user &&
-      config.mailhook.password && config.mailhook.smtpHost && config.mailhook.imapHost) {
-    Actions.prototype._mailServer = email.server.connect({
-     user: config.mailhook.user, password: config.mailhook.password,
-     host: config.mailhook.smtpHost, ssl: config.mailhook.ssl
-    });
-  } else {
-    console.log('Has to input email information to send emails.');
-  }
-
   this._serverAddress = `http://${ip.address()}:${port}`;
-  this.actions = new Actions();
+  this.actions = new Actions({ mailhook: config.mailhook, members: members });
 }
 
 Flow.prototype = {
