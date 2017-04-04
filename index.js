@@ -87,8 +87,12 @@ Flow.prototype = {
     this._mailhook.hook(params.email)
       .trigger(data => {
         if (data.subject === params.subject) {
+          var applicantIdSelector = params.applicantIdSelector ||
+                                    // Select the first item on the google form,
+                                    // and that is the member ID.
+                                    'table tr:first-child td:last-child';
           var applicantId = jsdom.jsdom(data.html)
-                                 .querySelector(params.applicantIdSelector).textContent;
+                                 .querySelector(applicantIdSelector).textContent;
           members[applicantId] ?
             request.post({
               // FIXME: Do not use params.subject to build the webhook address.
