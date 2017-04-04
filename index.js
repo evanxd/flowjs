@@ -89,19 +89,20 @@ Flow.prototype = {
         if (data.subject === params.subject) {
           var applicantId = jsdom.jsdom(data.html)
                                  .querySelector(params.applicantIdSelector).textContent;
-          request.post({
-            // FIXME: Do not use params.subject to build the webhook address.
-            url: `${this._serverAddress}/${params.subject}`,
-            json: {
-              senderId: applicantId,
-              applicantId: applicantId,
-              application: data.html,
-              apiKey: members[applicantId].apiKey,
+          members[applicantId] ?
+            request.post({
+              // FIXME: Do not use params.subject to build the webhook address.
+              url: `${this._serverAddress}/${params.subject}`,
+              json: {
+                senderId: applicantId,
+                applicantId: applicantId,
+                application: data.html,
+                apiKey: members[applicantId].apiKey,
+              },
             },
-          },
-          (error, response, body) => {
-            error ? console.log(error.message) : console.log(body);
-          });
+            (error, response, body) => {
+              error ? console.log(error.message) : console.log(body);
+            }) : console.log(`Cannot find out the ${applicantId} applicantId in members.json.`);
         }
       });
   },
