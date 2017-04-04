@@ -62,10 +62,14 @@ Flow.prototype = {
             callback(data);
           } else if (typeof callback === 'object') {
             var workflow = callback.workflow || 'standar';
-            var workflows = new Workflows(this.actions, callback);
-            workflows[workflow](data);
+            var workflows = Workflows.createInstance(this.actions, callback);
+            if (workflows) {
+              workflows[workflow](data);
+              res.jsonp({ result: 'success', });
+            } else {
+              res.jsonp({ result: 'fail', message: 'Cannot initialize a Workflows object.', });
+            }
           }
-          res.jsonp({ result: 'success', });
         } else {
           res.jsonp({ result: 'fail', message: 'The API key is incorrect.', });
         }
