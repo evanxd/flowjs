@@ -61,7 +61,7 @@ Flow.prototype = {
           if (typeof callback === 'function') {
             callback(data);
           } else if (typeof callback === 'object') {
-            var workflow = callback.workflow || 'classic';
+            var workflow = callback.workflow || 'standar';
             var workflows = new Workflows(this.actions, callback);
             workflows[workflow](data);
           }
