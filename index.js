@@ -80,7 +80,7 @@ Flow.prototype = {
     this._mailhook = this._mailhook ||
                      new Mailhook(config.mailhook.user, config.mailhook.password,
                                   config.mailhook.imapHost);
-    this._mailhook.hook(params.fromEmail)
+    this._mailhook.hook(params.email)
       .trigger(data => {
         if (data.subject === params.subject) {
           var applicantId = jsdom.jsdom(data.html)
