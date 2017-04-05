@@ -1,0 +1,33 @@
+{
+  "wowens": {
+    "name": "William Owens",
+    "email": "wowens@your-org.com",
+    "title": "Director",
+    "department": "A Team",
+    "apiKey": "cb614c39-7e03-4c62-b2d3-3c27f467c766"
+  },
+
+  "vtyler": {
+    "name": "Virgil Tyler",
+    "email": "vtyler@your-org.com",
+    "title": "Salesman",
+    "manager": "wowens",
+    "apiKey": "81a2748e-34ec-481c-87dd-923c96216193"
+  },
+
+  "mwallace": {
+    "name": "Melanie Wallace",
+    "email": "mwallace@your-org.com",
+    "title": "Product Manager",
+    "manager": "wowens",
+    "apiKey": "f21532c0-4abe-477b-9154-5cebeb2211bf"
+  },
+
+  "mcummings": {
+    "name": "Maggie Cummings",
+    "email": "mcummings@your-org.com",
+    "title": "Secretary",
+    "manager": "wowens",
+    "apiKey": "d631d240-973f-4026-ad12-d8323e1ef7af"
+  }
+}

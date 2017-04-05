@@ -17,13 +17,13 @@ var userDir = path.dirname(module.parent.filename);
 var config = require(`${userDir}/flowjs.json`);
 var members = require(`${userDir}/members.json`);
 
-function Flow() {
+function Flow(options = {}) {
   var app = express();
   app.use(bodyParser.json());
   app.use(bodyParser.urlencoded({ extended: true }));
   var port = config.webhook.port || 8080;
   app.listen(port, function () {
-    console.log(`Flow.js is listening on port ${port}!`);
+    options.debug && console.log(`Flow.js is listening on port ${port}!`);
   });
   this._app = app;
   this._serverAddress = `http://${ip.address()}:${port}`;
@@ -60,6 +60,7 @@ Flow.prototype = {
           data.webhookAddress = webhookAddress;
           if (typeof callback === 'function') {
             callback(data);
+            res.jsonp({ result: 'success', });
           } else if (typeof callback === 'object') {
             var workflow = callback.workflow || 'standar';
             var workflows = Workflows.createInstance(this.actions, callback);
