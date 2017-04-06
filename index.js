@@ -17,6 +17,7 @@ var userDir = path.dirname(module.parent.filename);
 var config = require(`${userDir}/flowjs.json`);
 var members = require(`${userDir}/members.json`);
 
+// TOOD: Move Flow object to a new file.
 function Flow(options = {}) {
   var app = express();
   app.use(bodyParser.json());
