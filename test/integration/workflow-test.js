@@ -1,5 +1,8 @@
 var assert = require('chai').assert;
+var fs = require('fs');
+var path = require('path');
 var request = require('request');
+var currentDir = path.dirname(module.filename);
 var flow;
 
 describe('Workflow', function() {

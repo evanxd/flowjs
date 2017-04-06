@@ -113,4 +113,11 @@ Flow.prototype = {
   },
 };
 
+// Setup the Flow.js runtime environment.
+// Ensure users have already created the attachments directory.
+// If not, create for them.
+if (!fs.existsSync(`${userDir}/attachments/`)) {
+  fs.mkdirSync(`${userDir}/attachments/`)
+}
+
 module.exports = new Flow();
