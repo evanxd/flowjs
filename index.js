@@ -54,7 +54,8 @@ Flow.prototype = {
       })
       .post((req, res) => {
         var data = req.body;
-        if (data.apiKey === members[data.senderId].apiKey) {
+        var sender = members[data.senderId];
+        if (sender && sender.apiKey === data.apiKey) {
           if (!data.id) {
             data.id = shortid.generate();
             fs.writeFileSync(`${userDir}/attachments/${data.id}.html`, data.application, 'utf-8');
@@ -77,6 +78,8 @@ Flow.prototype = {
               res.jsonp({ result: 'fail', message: 'Cannot initialize a Workflows object.', });
             }
           }
+        } else if (!sender) {
+          res.jsonp({ result: 'fail', message: 'No such sender ID.' });
         } else {
           res.jsonp({ result: 'fail', message: 'The API key is incorrect.', });
         }

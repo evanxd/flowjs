@@ -42,6 +42,40 @@ describe('Workflow', function() {
           done();
         });
     });
+
+    it('should get fail result when the API key is incorrect', function(done) {
+      request.post({
+          url: 'http://localhost:8080/expenditure-application-workflow',
+          json: {
+            senderId: 'vtyler',
+            applicantId: 'vtyler',
+            application: '<div>Application content.</div>',
+            apiKey: 'fake-api-key',
+          },
+        },
+        function(error, response, body) {
+          assert.equal(body.result, 'fail');
+          assert.equal(body.message, 'The API key is incorrect.');
+          done();
+        });
+    });
+
+    it('should get fail result when sender is not listed in members.json', function(done) {
+      request.post({
+          url: 'http://localhost:8080/expenditure-application-workflow',
+          json: {
+            senderId: 'someIdNotListedInMemberJson',
+            applicantId: 'someIdNotListedInMemberJson',
+            application: '<div>Application content.</div>',
+            apiKey: 'fake-api-key',
+          },
+        },
+        function(error, response, body) {
+          assert.equal(body.result, 'fail');
+          assert.equal(body.message, 'No such sender ID.');
+          done();
+        });
+    });
   });
 
   describe('Setup a workflow with incorrect callback function', function() {
