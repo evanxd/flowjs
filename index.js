@@ -23,7 +23,7 @@ function Flow(options = {}) {
   app.use(bodyParser.json());
   app.use(bodyParser.urlencoded({ extended: true }));
   var port = config.webhook.port || 8080;
-  app.listen(port, function () {
+  this._server = app.listen(port, function () {
     options.debug && console.log(`Flow.js is listening on port ${port}!`);
   });
   this._app = app;
@@ -35,6 +35,7 @@ Flow.prototype = {
   actions: null,
   _app: null,
   _mailhook: null,
+  _server: null,
   _serverAddress: null,
 
   setup: function(workflowName, callback) {
@@ -60,8 +61,12 @@ Flow.prototype = {
           }
           data.webhookAddress = webhookAddress;
           if (typeof callback === 'function') {
-            callback(data);
-            res.jsonp({ result: 'success', });
+            try {
+              callback(data);
+              res.jsonp({ result: 'success', });
+            } catch (error) {
+              res.jsonp({ result: 'fail', message: error.message });
+            }
           } else if (typeof callback === 'object') {
             var workflow = callback.workflow || 'standar';
             var workflows = Workflows.createInstance(this.actions, callback);
@@ -111,6 +116,10 @@ Flow.prototype = {
             }) : console.log(`Cannot find out the ${applicantId} applicantId in members.json.`);
         }
       });
+  },
+
+  close: function() {
+    this._server.close();
   },
 };
 
