@@ -6,18 +6,9 @@ var currentDir = path.dirname(module.filename);
 var flow;
 
 describe('Workflow', function() {
-  beforeEach(function() {
-    flow = require('../../index');
-  });
-
-  afterEach(function() {
-    flow.close();
-    // Remove the flow module cache to force to renew a flow instance.
-    delete require.cache[require.resolve('../../index')];
-  });
-
   describe('Setup a workflow', function() {
-    it('should successfully setup a workflow and trigger the callback', function(done) {
+    before(function() {
+      flow = require('../../index');
       flow.setup('expenditure-application-workflow', function(data) {
         assert.isDefined(data.id);
         // TODO: Add regular expression to check the webhookAddress.
@@ -28,6 +19,15 @@ describe('Workflow', function() {
         assert.equal(data.apiKey, '81a2748e-34ec-481c-87dd-923c96216193');
         assert.equal(6, Object.keys(data).length);
       });
+    });
+
+    after(function() {
+      flow.close();
+      // Remove the flow module cache to force to renew a flow instance.
+      delete require.cache[require.resolve('../../index')];
+    });
+
+    it('should get success result', function(done) {
       request.post({
           url: 'http://localhost:8080/expenditure-application-workflow',
           json: {
@@ -42,8 +42,11 @@ describe('Workflow', function() {
           done();
         });
     });
+  });
 
-    it('should get fail result when the callback function goes wrong', function(done) {
+  describe('Setup a workflow with incorrect callback function', function() {
+    before(function() {
+      flow = require('../../index');
       flow.setup('expenditure-application-workflow', function(data) {
         assert.isDefined(data.id);
         // TODO: Add regular expression to check the webhookAddress.
@@ -55,6 +58,15 @@ describe('Workflow', function() {
         assert.equal(6, Object.keys(data).length);
         throw new Error('Go wrong.');
       });
+    });
+
+    after(function() {
+      flow.close();
+      // Remove the flow module cache to force to renew a flow instance.
+      delete require.cache[require.resolve('../../index')];
+    });
+
+    it('should get fail result', function(done) {
       request.post({
           url: 'http://localhost:8080/expenditure-application-workflow',
           json: {
