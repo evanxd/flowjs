@@ -22,7 +22,7 @@ describe('Workflow', function() {
     });
 
     after(function() {
-      flow.close();
+      flow.shutdown();
       // Remove the flow module cache to force to renew a flow instance.
       delete require.cache[require.resolve('../../index')];
     });
@@ -95,7 +95,7 @@ describe('Workflow', function() {
     });
 
     after(function() {
-      flow.close();
+      flow.shutdown();
       // Remove the flow module cache to force to renew a flow instance.
       delete require.cache[require.resolve('../../index')];
     });
